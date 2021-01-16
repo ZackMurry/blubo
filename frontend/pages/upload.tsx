@@ -20,13 +20,12 @@ const UploadBook: FC = () => {
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
+      <input type='file' onChange={handleFileChange} />
       <button type='submit' onClick={handleFileUpload}>
         Upload
       </button>
     </div>
   )
-
 }
 
 export default UploadBook

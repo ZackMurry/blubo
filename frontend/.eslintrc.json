@@ -30,7 +30,7 @@
     "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx", ".tsx"]}],
     "linebreak-style": 0,
     "react/no-unescaped-entities": 0,
-    "indent": ["error", 2, {"ignoredNodes": ["JSXElement"]}],
+    "@typescript-eslint/indent": ["error", 2, {"ignoredNodes": ["JSXElement"]}],
     "react/jsx-indent": "off",
     "semi": [2, "never"],
     "react/jsx-indent-props": "off",
