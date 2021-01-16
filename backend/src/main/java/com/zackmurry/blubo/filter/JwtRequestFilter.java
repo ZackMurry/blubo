@@ -4,6 +4,7 @@ import com.zackmurry.blubo.model.user.UserEntity;
 import com.zackmurry.blubo.service.UserService;
 import com.zackmurry.blubo.util.JwtUtil;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,16 +52,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7); //substring(7) skips "Bearer "
             try {
                 username = jwtUtil.extractSubject(jwt);
-            } catch (MalformedJwtException e) {
+            } catch (MalformedJwtException | SignatureException e) {
                 //MalformedJwtException is thrown when the JWT is invalid.
                 response.sendError(HttpStatus.UNAUTHORIZED.value()); //throws IOException
                 return;
             }
         }
 
-        if (username != null && (SecurityContextHolder.getContext() == null || SecurityContextHolder.getContext().getAuthentication() == null)) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            System.out.println("if");
             UserEntity userDetails = (UserEntity) userService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(jwt, userDetails)) {
+            if (jwtUtil.validateToken(jwt, userDetails)) {
                 var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

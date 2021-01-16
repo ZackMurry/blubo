@@ -8,3 +8,9 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(64) NOT NULL,
     hash VARCHAR(64) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS books (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY, -- id also serves as file name
+    owner_id UUID NOT NULL REFERENCES users ON DELETE CASCADE,
+    title VARCHAR(256) NOT NULL -- title must be unique to the owner
+);
