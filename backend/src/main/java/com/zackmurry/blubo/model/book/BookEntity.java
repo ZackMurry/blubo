@@ -16,6 +16,7 @@ public class BookEntity {
     private UUID id;
     private UUID ownerId;
     private String title;
+    private String author;
 
     public BookEntity(UUID ownerId, String title) {
         this.ownerId = ownerId;

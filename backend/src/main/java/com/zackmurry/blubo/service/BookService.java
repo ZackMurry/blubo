@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -46,17 +47,21 @@ public class BookService {
         }
     }
 
+    private Path resolvePathFromBookId(UUID id) {
+        return Paths.get(uploadDirectory + File.separator + StringUtils.cleanPath(id.toString()) + ".pdf");
+    }
+
     public void createBook(@NonNull MultipartFile file) {
         if (file.getOriginalFilename() == null) {
             throw new BadRequestException();
         }
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
         final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         // using a temporary title for the book. the user will be prompted to enter a title
         final BookEntity bookEntity = new BookEntity(userId, file.getOriginalFilename());
         final UUID bookId = bookDao.createBook(bookEntity);
         try {
-            Path copyLocation = Paths.get(uploadDirectory + File.separator + StringUtils.cleanPath(bookId.toString()) + ".pdf");
+            Path copyLocation = resolvePathFromBookId(bookId);
             if (copyLocation.toFile().exists()) {
                 logger.warn("UUID of book non-unique! Tried to create a file with the name of an existing file");
                 throw new InternalServerException();
@@ -66,6 +71,22 @@ public class BookService {
             e.printStackTrace();
             throw new InternalServerException();
         }
+    }
+
+    public List<BookEntity> getBooksByUser(@NonNull UUID userId) {
+        return bookDao.getBooksByUser(userId);
+//        for (BookEntity bookEntity : bookEntities) {
+//            Path bookLocation = resolvePathFromBookId(bookEntity.getId());
+//            if (!bookLocation.toFile().exists()) {
+//                logger.warn("Book in database but no file found! Id: {}", bookEntity.getId().toString());
+//                // delete book from database so that this doesn't happen again
+//                if (bookDao.deleteBook(bookEntity.getId()) != 1) {
+//                    logger.warn("Book found in database, file not found, then not found in database when deleting. Bruh. Id: {}", bookEntity.getId());
+//                    throw new InternalServerException();
+//                }
+//            }
+//
+//        }
     }
 
 }

@@ -56,6 +56,7 @@ const SignUpPage: FC = () => {
     })
 
     if (response.ok) {
+      setErrorText('')
       const { jwt } = await response.json()
       Cookie.set('jwt', jwt)
       router.push('/home')
@@ -83,7 +84,7 @@ const SignUpPage: FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.palette.secondary.main
+        backgroundColor: theme.palette.primary.main
       }}
     >
       <Paper elevation={5} style={{ padding: '50px 75px', borderRadius: 15 }}>

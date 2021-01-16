@@ -5,12 +5,17 @@ import {
   Button, IconButton, InputAdornment, Paper, TextField, Typography
 } from '@material-ui/core'
 import Cookie from 'js-cookie'
-import { FC, FormEvent, useState } from 'react'
+import { FormEvent, useState } from 'react'
+import { GetServerSideProps, NextPage } from 'next'
 import ErrorAlert from '../components/alert/ErrorAlert'
 import theme from '../components/utils/theme'
 import ToggleIcon from '../components/utils/ToggleIcon'
 
-const LoginPage: FC = () => {
+interface Props {
+  redirect?: string
+}
+
+const LoginPage: NextPage<Props> = ({ redirect }) => {
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
 
@@ -39,9 +44,10 @@ const LoginPage: FC = () => {
       })
     })
     if (response.ok) {
+      setErrorText('')
       const { jwt } = (await response.json())
       Cookie.set('jwt', jwt)
-      router.push('/home')
+      router.push(redirect || '/home')
     } else if (response.status === 404 || response.status === 401 || response.status === 403 || response.status === 400) {
       setErrorText('Invalid email and/or password')
     } else if (response.status === 500) {
@@ -59,7 +65,7 @@ const LoginPage: FC = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.palette.secondary.main
+        backgroundColor: theme.palette.primary.main
       }}
     >
       <Paper elevation={5} style={{ padding: '50px 75px', borderRadius: 15 }}>
@@ -124,3 +130,12 @@ const LoginPage: FC = () => {
 }
 
 export default LoginPage
+
+// eslint-disable-next-line arrow-body-style
+export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) => {
+  return {
+    props: {
+      redirect: query?.redirect?.toString() || null
+    }
+  }
+}
