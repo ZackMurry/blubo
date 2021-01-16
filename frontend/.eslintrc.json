@@ -51,6 +51,7 @@
     // it looks like these things just don't work with typescript
     "import/no-unresolved": "off",
     "import/extensions": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "indent": "off"
   }
 }
