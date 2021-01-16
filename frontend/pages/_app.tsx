@@ -1,12 +1,12 @@
+import { FC, useEffect } from 'react'
 import Head from 'next/head'
 import { AppProps } from 'next/dist/next-server/lib/router/router'
-import { useEffect } from 'react'
 import { CssBaseline } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/core/styles'
 import '../styles/globals.css'
 import theme from '../components/utils/theme'
 
-const App: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
+const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     const jssStyles = document.getElementById('jss-server-side')
     if (jssStyles) {

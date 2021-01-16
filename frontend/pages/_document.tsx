@@ -33,7 +33,7 @@ BluboDocument.getInitialProps = async ctx => {
   ctx.renderPage = () => originalRenderPage({
     enhanceApp: App => props => sheets.collect(<App {...props} />)
   })
-  
+
   const initalProps = await Document.getInitialProps(ctx)
   return {
     ...initalProps,
