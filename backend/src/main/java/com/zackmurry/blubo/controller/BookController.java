@@ -1,5 +1,6 @@
 package com.zackmurry.blubo.controller;
 
+import com.zackmurry.blubo.model.book.BookCreateResponse;
 import com.zackmurry.blubo.model.book.UpdateBookRequest;
 import com.zackmurry.blubo.model.book.UpdatePageRequest;
 import com.zackmurry.blubo.exception.BadRequestException;
@@ -24,8 +25,8 @@ public class BookController {
     private BookService bookService;
 
     @PostMapping("")
-    public UUID createBook(@RequestParam("file") MultipartFile file) {
-        return bookService.createBook(file);
+    public BookCreateResponse createBook(@RequestParam("file") MultipartFile file) {
+        return new BookCreateResponse(bookService.createBook(file));
     }
 
     // todo add limit param

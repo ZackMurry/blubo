@@ -55,7 +55,7 @@ public class BookService {
     }
 
     public UUID createBook(@NonNull MultipartFile file) {
-        if (file.getOriginalFilename() == null) {
+        if (file.getOriginalFilename() == null || !file.getOriginalFilename().endsWith(".pdf")) {
             throw new BadRequestException();
         }
 
@@ -144,6 +144,9 @@ public class BookService {
         }
         if (!userId.equals(bookEntity.getOwnerId())) {
             throw new ForbiddenException();
+        }
+        if (title.equals("")) {
+            title = bookEntity.getTitle();
         }
         bookDao.updateBook(id, title, author);
     }
