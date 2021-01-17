@@ -27,7 +27,7 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public Optional<UserEntity> findByEmail(String email) {
-        String sql = "SELECT id, first_name, last_name, hash, pages_read FROM users WHERE email = ?";
+        String sql = "SELECT id, first_name, last_name, hash, pages_read, pages_read_in_week FROM users WHERE email = ?";
         try {
             List<UserEntity> userEntityList = jdbcTemplate.query(
                     sql,
@@ -37,7 +37,8 @@ public class UserDataAccessService implements UserDao {
                             resultSet.getString("first_name"),
                             resultSet.getString("last_name"),
                             resultSet.getString("hash"),
-                            resultSet.getInt("pages_read")
+                            resultSet.getInt("pages_read"),
+                            resultSet.getInt("pages_read_in_week")
                     ),
                     email
             );
@@ -74,7 +75,7 @@ public class UserDataAccessService implements UserDao {
             return new ArrayList<>();
         }
         final String questionMarks = String.join(",", Collections.nCopies(ids.size(), "?"));
-        final String sql = String.format("SELECT id, email, first_name, last_name, hash, pages_read FROM users WHERE id IN (%s)", questionMarks);
+        final String sql = String.format("SELECT id, email, first_name, last_name, hash, pages_read, pages_read_in_week FROM users WHERE id IN (%s)", questionMarks);
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             for (int i = 0; i < ids.size(); i++) {
@@ -90,7 +91,8 @@ public class UserDataAccessService implements UserDao {
                                 resultSet.getString("first_name"),
                                 resultSet.getString("last_name"),
                                 resultSet.getString("hash"),
-                                resultSet.getInt("pages_read")
+                                resultSet.getInt("pages_read"),
+                                resultSet.getInt("pages_read_in_week")
                         )
                 );
             }
@@ -102,12 +104,13 @@ public class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public void updatePagesRead(UUID userId, int pagesRead) {
-        final String sql = "UPDATE users SET pages_read = ? WHERE id = ?";
+    public void updatePagesRead(UUID userId, int pagesRead, int pagesReadInWeek) {
+        final String sql = "UPDATE users SET pages_read = ?, pages_read_in_week = ? WHERE id = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, pagesRead);
-            preparedStatement.setObject(2, userId);
+            preparedStatement.setInt(2, pagesReadInWeek);
+            preparedStatement.setObject(3, userId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,7 +120,7 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public List<UserEntity> getUsersSortedByPages(int limit) {
-        final String sql = "SELECT id, email, first_name, last_name, hash, pages_read FROM users ORDER BY pages_read DESC LIMIT ?";
+        final String sql = "SELECT id, email, first_name, last_name, hash, pages_read, pages_read_in_week FROM users ORDER BY pages_read DESC LIMIT ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, limit);
@@ -131,11 +134,23 @@ public class UserDataAccessService implements UserDao {
                                 resultSet.getString("first_name"),
                                 resultSet.getString("last_name"),
                                 resultSet.getString("hash"),
-                                resultSet.getInt("pages_read")
+                                resultSet.getInt("pages_read"),
+                                resultSet.getInt("pages_read_in_week")
                         )
                 );
             }
             return userEntities;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public void resetWeeklyLeaderboard() {
+        final String sql = "UPDATE users SET pages_read_in_week = 0";
+        try {
+            jdbcTemplate.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InternalServerException();

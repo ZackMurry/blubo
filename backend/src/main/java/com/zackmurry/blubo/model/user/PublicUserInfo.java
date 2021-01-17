@@ -17,13 +17,15 @@ public class PublicUserInfo {
     private String firstName;
     private String lastName;
     private Integer pagesRead;
+    private Integer pagesReadInWeek;
 
     public static PublicUserInfo of(UserEntity userEntity) {
         return new PublicUserInfo(
                 userEntity.getId(),
                 userEntity.getFirstName(),
                 userEntity.getLastName(),
-                userEntity.getPagesRead()
+                userEntity.getPagesRead(),
+                userEntity.getPagesReadInWeek()
         );
     }
 

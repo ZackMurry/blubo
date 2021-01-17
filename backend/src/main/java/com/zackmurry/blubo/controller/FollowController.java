@@ -33,9 +33,7 @@ public class FollowController {
     @GetMapping("")
     public List<PublicUserInfo> getFollowing() {
         final UUID id = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        var t = followService.getFollowingByUser(id);
-        System.out.println(t);
-        return t;
+        return followService.getFollowingByUser(id);
     }
 
     @DeleteMapping("/{id}")

@@ -14,8 +14,10 @@ public interface UserDao {
 
     List<UserEntity> findByIds(List<UUID> ids);
 
-    void updatePagesRead(UUID userId, int pagesRead);
+    void updatePagesRead(UUID userId, int pagesRead, int pagesReadInWeek);
 
     List<UserEntity> getUsersSortedByPages(int limit);
+
+    void resetWeeklyLeaderboard();
 
 }

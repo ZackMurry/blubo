@@ -8,6 +8,7 @@ interface Props {
   leaderboard: PublicUserInfo[]
 }
 
+// todo toggle between pages read in week and pages read total
 const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
   <Paper
     style={{

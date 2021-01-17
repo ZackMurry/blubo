@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,6 +178,21 @@ public class BookDataAccessService implements BookDao {
             preparedStatement.setString(1, title);
             preparedStatement.setString(2, author);
             preparedStatement.setObject(3, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public void updateLastOpened(UUID id) {
+        final String sql = "UPDATE books SET last_opened = ? WHERE id = ?";
+        final Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setTimestamp(1, currentTimestamp);
+            preparedStatement.setObject(2, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

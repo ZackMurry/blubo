@@ -23,6 +23,7 @@ public class UserEntity implements UserDetails {
     private String lastName;
     private String hash;
     private Integer pagesRead;
+    private Integer pagesReadInWeek;
 
     public UserEntity(String email, String firstName, String lastName, String hash) {
         this.email = email;

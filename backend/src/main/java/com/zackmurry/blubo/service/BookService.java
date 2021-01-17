@@ -109,6 +109,8 @@ public class BookService {
             e.printStackTrace();
             throw new BadRequestException();
         }
+        
+        bookDao.updateLastOpened(id);
         return rawContent;
     }
 
@@ -140,8 +142,9 @@ public class BookService {
 
         // updating pages_read field in users
         final int numNewPagesRead = page - bookEntity.getPageNumber(); // can be negative for good reasons
-        final int newPagesRead = principal.getPagesRead() + numNewPagesRead;
-        userService.updatePagesRead(userId, newPagesRead);
+        userService.addNewPages(userId, numNewPagesRead);
+
+        bookDao.updateLastOpened(id);
 
         bookDao.setBookPage(id, page);
     }

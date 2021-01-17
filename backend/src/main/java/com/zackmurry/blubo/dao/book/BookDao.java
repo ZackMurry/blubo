@@ -22,4 +22,6 @@ public interface BookDao {
 
     void updateBook(UUID id, String title, String author);
 
+    void updateLastOpened(UUID id);
+
 }

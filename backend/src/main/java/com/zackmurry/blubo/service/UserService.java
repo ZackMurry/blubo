@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -90,8 +91,11 @@ public class UserService implements UserDetailsService {
         return userDao.findByIds(ids);
     }
 
-    public void updatePagesRead(UUID userId, int pagesRead) {
-        userDao.updatePagesRead(userId, pagesRead);
+    public void addNewPages(UUID userId, int newPages) {
+        final UserEntity principal = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final int updatedPagesRead = principal.getPagesRead() + newPages;
+        final int updatedPagesReadInWeek = principal.getPagesReadInWeek() + newPages;
+        userDao.updatePagesRead(userId, updatedPagesRead, updatedPagesReadInWeek);
     }
 
     public List<PublicUserInfo> getTopUsers(int limit) {
@@ -108,6 +112,10 @@ public class UserService implements UserDetailsService {
             return Optional.empty();
         }
         return Optional.of(userEntity.getId());
+    }
+
+    public void resetWeeklyLeaderboard() {
+        userDao.resetWeeklyLeaderboard();
     }
 
 }

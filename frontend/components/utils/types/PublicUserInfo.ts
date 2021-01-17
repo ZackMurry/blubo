@@ -3,6 +3,7 @@ interface PublicUserInfo {
   firstName: string
   lastName: string
   pagesRead: string
+  pagesReadInWeek: string
 }
 
 export default PublicUserInfo

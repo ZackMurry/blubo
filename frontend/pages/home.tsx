@@ -1,5 +1,5 @@
 import { parse } from 'cookie'
-import { Grid, Paper } from '@material-ui/core'
+import { Grid, Paper, Typography } from '@material-ui/core'
 import { GetServerSideProps, NextPage } from 'next'
 import BookPreview from '../components/book/BookPreview'
 import Logo from '../components/Logo'
@@ -24,9 +24,14 @@ const HomePage: NextPage<Props> = ({
   books, errorText, jwt, following, userLeaderboard
 }) => (
   <div style={{ backgroundColor: theme.palette.primary.main, width: '100%', minHeight: '100vh' }}>
-    <Logo size='small' white />
+    <div style={{ padding: 5 }}>
+      <Logo size='small' white />
+    </div>
     <div style={{ width: '75%', margin: '0 auto' }}>
       <Paper style={{ width: '100%', padding: 25 }}>
+        <Typography variant='h3' style={{ fontSize: 32, marginBottom: 5 }}>
+          Books
+        </Typography>
         <Grid container spacing={4}>
           {
             books && books.map(book => (
