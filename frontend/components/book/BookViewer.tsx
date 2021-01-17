@@ -30,9 +30,18 @@ const BookViewer: FC<Props> = ({
   const ref = useRef(null)
 
   const handleRenderSuccess = () => {
+    const annotations = document.getElementsByClassName('react-pdf__Page__annotations annotationLayer')[0]
+    while (annotations?.firstChild) {
+      annotations.removeChild(annotations.firstChild)
+    }
+
+    const textContent = document.getElementsByClassName('react-pdf__Page__textContent')[0]
+    while (textContent?.firstChild) {
+      textContent.removeChild(textContent.firstChild)
+    }
+
     const { width, height } = ref.current.getBoundingClientRect()
     onSizeChange(width, height)
-    console.log(width + ', ' + height)
   }
 
   return (

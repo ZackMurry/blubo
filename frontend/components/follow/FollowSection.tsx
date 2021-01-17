@@ -47,7 +47,7 @@ const FollowSection: FC<Props> = ({ jwt }) => {
 
   return (
     <>
-      <Paper style={{ width: '90%', marginLeft: 50, padding: '25px 0' }}>
+      <Paper style={{ width: '90%', padding: '25px 0' }}>
         <Typography variant='h3' style={{ fontSize: 36, textAlign: 'center', paddingTop: 25 }}>
           Follow Users
         </Typography>
@@ -65,13 +65,13 @@ const FollowSection: FC<Props> = ({ jwt }) => {
             label='Email'
             onChange={e => setFollowEmail(e.target.value)}
             variant='outlined'
-            style={{ marginBottom: 25 }}
+            style={{ marginBottom: 25, minWidth: 150 }}
           />
           <Button
             type='submit'
             variant='contained'
             color='secondary'
-            style={{ width: '50%' }}
+            style={{ width: '50%', minWidth: 100 }}
           >
             Follow
           </Button>
