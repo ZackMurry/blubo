@@ -46,24 +46,24 @@ const HomePage: NextPage<Props> = ({
             </Typography>
           </a>
         </Link>
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
           {
             books && books.map(book => (
-              <Grid item xs={3} lg={2} key={book.id}>
+              <Grid item xs={12} sm={6} md={3} lg={2} key={book.id}>
                 <BookPreview {...book} />
               </Grid>
             ))
           }
-          <Grid item xs={3} lg={2}>
+          <Grid item xs={12} sm={6} md={3} lg={2}>
             <ImportBook jwt={jwt} />
           </Grid>
         </Grid>
       </Paper>
-      <Grid container spacing={3} style={{ width: '100%', marginTop: 50 }}>
-        <Grid item xs={7}>
+      <Grid container spacing={3} style={{ width: '100%', marginTop: 25, marginRight: 25 }}>
+        <Grid item xs={12} lg={7}>
           <PageLeaderboard following={following} leaderboard={userLeaderboard} />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={12} lg={5}>
           <FollowSection jwt={jwt} />
         </Grid>
       </Grid>

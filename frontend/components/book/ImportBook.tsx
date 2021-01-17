@@ -1,9 +1,10 @@
+import BackupIcon from '@material-ui/icons/Backup'
 import {
   Button,
   Card, CardActionArea, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import { ChangeEvent, FC, useState } from 'react'
+import { ChangeEvent, FC, FormEvent, useState } from 'react'
 import ErrorAlert from '../alert/ErrorAlert'
 import theme from '../utils/theme'
 
@@ -13,7 +14,7 @@ interface Props {
 
 const ImportBook: FC<Props> = ({ jwt }) => {
   const [ popupState, setPopupState ] = useState(0)
-  const [ file, setFile ] = useState(null)
+  const [ file, setFile ] = useState<Blob | null>(null)
   const [ errorText, setErrorText ] = useState('')
   const [ bookId, setBookId ] = useState('')
   const [ title, setTitle ] = useState('')
@@ -26,7 +27,8 @@ const ImportBook: FC<Props> = ({ jwt }) => {
   }
 
   // todo prompt for title and author
-  const handleFileSubmit = async () => {
+  const handleFileSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (!file) {
       setErrorText('You must select a file')
       return
@@ -63,7 +65,8 @@ const ImportBook: FC<Props> = ({ jwt }) => {
     setTitle('')
   }
 
-  const handleSetDetails = async () => {
+  const handleSetDetails = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (title.length > 256) {
       setErrorText('The title must be a maximum of 256 characters')
       return
@@ -137,51 +140,70 @@ const ImportBook: FC<Props> = ({ jwt }) => {
         </CardActionArea>
       </Card>
       <Dialog open={popupState === 1} onClose={() => setPopupState(0)}>
-        <DialogTitle>
-          Import book
-        </DialogTitle>
-        <DialogContent>
-          <input type='file' onChange={handleFileChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPopupState(0)}>
-            Close
-          </Button>
-          <Button onClick={handleFileSubmit} variant='contained' color='secondary'>
-            Upload
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleFileSubmit} style={{ padding: '25px 50px' }}>
+          <DialogTitle>
+            Import book
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              Upload a file to read it anywhere.
+              <br />
+              Notice: your file will not be encrypted.
+            </Typography>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant='contained'
+                component='label'
+                style={{ margin: 25 }}
+                endIcon={<BackupIcon />}
+              >
+                Upload file
+                <input hidden type='file' onChange={handleFileChange} accept='.pdf' />
+              </Button>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setPopupState(0)}>
+              Close
+            </Button>
+            <Button type='submit' variant='contained' color='secondary'>
+              Upload
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
       <Dialog open={popupState === 2} onClose={handleDetailsClose}>
         <DialogTitle>
           Set book details
         </DialogTitle>
-        <DialogContent>
-          <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 25px' }}>
-            <TextField
-              value={title}
-              label='Title'
-              variant='outlined'
-              onChange={e => setTitle(e.target.value)}
-              style={{ marginBottom: 10 }}
-            />
-            <TextField
-              value={author}
-              label='Author'
-              variant='outlined'
-              onChange={e => setAuthor(e.target.value)}
-              style={{ marginTop: 10 }}
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDetailsClose}>
-            Close
-          </Button>
-          <Button onClick={handleSetDetails} variant='contained' color='secondary'>
-            Finish
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSetDetails}>
+          <DialogContent>
+            <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 25px' }}>
+              <TextField
+                value={title}
+                label='Title'
+                variant='outlined'
+                onChange={e => setTitle(e.target.value)}
+                style={{ marginBottom: 10 }}
+              />
+              <TextField
+                value={author}
+                label='Author'
+                variant='outlined'
+                onChange={e => setAuthor(e.target.value)}
+                style={{ marginTop: 10 }}
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDetailsClose}>
+              Close
+            </Button>
+            <Button type='submit' variant='contained' color='secondary'>
+              Finish
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
       {
         errorText && <ErrorAlert text={errorText} onClose={() => setErrorText('')} />

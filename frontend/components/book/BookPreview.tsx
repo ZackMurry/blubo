@@ -27,7 +27,7 @@ const BookPreview: FC<Props> = ({
   return (
     <Link href={`/books/${id}`}>
       <a href={`/books/${id}`}>
-        <Card style={{ borderRadius: 10 }}>
+        <Card elevation={2} style={{ borderRadius: 10 }}>
           <CardActionArea>
             <div
               style={{

@@ -82,8 +82,7 @@ const BookPage: NextPage<Props> = ({
           height: '100vh',
           display: 'flex',
           justifyContent: 'space-between',
-          backgroundColor: theme.palette.primary.main,
-          overflow: 'hidden'
+          backgroundColor: theme.palette.primary.main
         }}
       >
         <div
@@ -121,22 +120,24 @@ const BookPage: NextPage<Props> = ({
               )
             }
           </div>
-          {
-            numPages && (
-              <Typography
-                variant='h3'
-                style={{
-                  fontSize: 18,
-                  textAlign: 'center',
-                  marginTop: 10,
-                  userSelect: 'none',
-                  color: '#fff'
-                }}
-              >
-                {`Page ${pageNumber} of ${numPages}`}
-              </Typography>
-            )
-          }
+          <div style={{ display: 'flex' }}>
+            {
+              numPages && (
+                <Typography
+                  variant='h3'
+                  style={{
+                    fontSize: 18,
+                    textAlign: 'center',
+                    marginTop: 10,
+                    userSelect: 'none',
+                    color: '#fff'
+                  }}
+                >
+                  {`Page ${pageNumber} of ${numPages}`}
+                </Typography>
+              )
+            }
+          </div>
         </div>
         <div
           style={{

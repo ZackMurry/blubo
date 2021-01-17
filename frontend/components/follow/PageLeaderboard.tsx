@@ -13,7 +13,7 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
   <Paper
     style={{
       width: '100%',
-      padding: 50
+      padding: '5%'
     }}
   >
     <Typography
@@ -25,10 +25,10 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
         marginBottom: 10
       }}
     >
-      Leaderboard
+      Weekly Leaderboard
     </Typography>
-    <div style={{ margin: '30px auto', display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ width: '50%' }}>
+    <Grid container spacing={3} style={{ margin: '30px auto' }}>
+      <Grid item xs={12} lg={6}>
         <Typography variant='h3' style={{ fontSize: 24, textAlign: 'center', marginBottom: 25 }}>
           Following
         </Typography>
@@ -71,8 +71,8 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
             </Typography>
           )
         }
-      </div>
-      <div style={{ width: '50%' }}>
+      </Grid>
+      <Grid item xs={12} lg={6}>
         <Typography variant='h3' style={{ fontSize: 24, textAlign: 'center', marginBottom: 25 }}>
           All users
         </Typography>
@@ -93,8 +93,8 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
             ))
           }
         </Grid>
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   </Paper>
 )
 
