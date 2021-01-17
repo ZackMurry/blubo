@@ -109,7 +109,7 @@ public class BookService {
             e.printStackTrace();
             throw new BadRequestException();
         }
-        
+
         bookDao.updateLastOpened(id);
         return rawContent;
     }

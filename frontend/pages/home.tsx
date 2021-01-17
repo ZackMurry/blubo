@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { parse } from 'cookie'
 import { Grid, Paper, Typography } from '@material-ui/core'
 import { GetServerSideProps, NextPage } from 'next'
@@ -29,9 +30,22 @@ const HomePage: NextPage<Props> = ({
     </div>
     <div style={{ width: '75%', margin: '0 auto' }}>
       <Paper style={{ width: '100%', padding: 25 }}>
-        <Typography variant='h3' style={{ fontSize: 32, marginBottom: 5 }}>
+        <Typography variant='h3' style={{ fontSize: 32 }}>
           Books
         </Typography>
+        <Link href='/books/all'>
+          <a href='/books/all'>
+            <Typography
+              style={{
+                padding: '5px 10px',
+                fontWeight: 300,
+                textDecoration: 'underline'
+              }}
+            >
+              View all
+            </Typography>
+          </a>
+        </Link>
         <Grid container spacing={4}>
           {
             books && books.map(book => (

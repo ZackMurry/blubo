@@ -6,6 +6,7 @@ import com.zackmurry.blubo.model.user.PublicUserInfo;
 import com.zackmurry.blubo.model.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,20 @@ public class FollowService {
         // sort by pages read
         // todo this might be backwards idk
         users.sort((a, b) -> b.getPagesRead().compareTo(a.getPagesRead()));
+
+        // inserting principal
+        final UserEntity principal = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean added = false;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getPagesReadInWeek() <= principal.getPagesReadInWeek()) {
+                users.add(i, principal);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            users.add(principal);
+        }
         return users.stream().map(PublicUserInfo::of).collect(Collectors.toList());
     }
 

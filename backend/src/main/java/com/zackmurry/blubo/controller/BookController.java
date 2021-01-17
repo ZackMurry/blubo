@@ -29,7 +29,6 @@ public class BookController {
         return new BookCreateResponse(bookService.createBook(file));
     }
 
-    // todo add limit param
     @GetMapping("")
     public List<BookEntity> getBooksByUser(@RequestParam(required = false) Integer limit) {
         if (limit == null) {

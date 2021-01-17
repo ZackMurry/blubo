@@ -33,7 +33,7 @@ const FollowSection: FC<Props> = ({ jwt }) => {
       setErrorText('')
       setSuccessText(`Successfully followed ${followEmail}`)
       setFollowEmail('')
-      setTimeout(router.reload, 5000)
+      setTimeout(router.reload, 2500)
     } else if (response.status === 401 || response.status === 403) {
       setErrorText('You must be logged in in order to follow users')
     } else if (response.status === 404) {

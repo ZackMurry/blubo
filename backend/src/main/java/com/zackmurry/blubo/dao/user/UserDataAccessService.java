@@ -120,7 +120,7 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public List<UserEntity> getUsersSortedByPages(int limit) {
-        final String sql = "SELECT id, email, first_name, last_name, hash, pages_read, pages_read_in_week FROM users ORDER BY pages_read DESC LIMIT ?";
+        final String sql = "SELECT id, email, first_name, last_name, hash, pages_read, pages_read_in_week FROM users ORDER BY pages_read_in_week DESC LIMIT ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, limit);
