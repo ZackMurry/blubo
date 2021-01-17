@@ -21,17 +21,18 @@ interface Props {
   pageNumber: number
   onLoadSuccess: Function
   onError: Function
+  onSizeChange: (width: number, height: number) => void
 }
 
 const BookViewer: FC<Props> = ({
-  base64, pageNumber, onLoadSuccess, onError
+  base64, pageNumber, onLoadSuccess, onError, onSizeChange
 }) => {
-  const [ width, setWidth ] = useState(612)
   const ref = useRef(null)
 
   const handleRenderSuccess = () => {
-    setWidth(ref.current.getBoundingClientRect().width)
-    console.log(ref.current.getBoundingClientRect().width)
+    const { width, height } = ref.current.getBoundingClientRect()
+    onSizeChange(width, height)
+    console.log(width + ', ' + height)
   }
 
   return (

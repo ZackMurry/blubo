@@ -33,8 +33,9 @@ const BookPage: NextPage<Props> = ({
   const [ pageNumber, setPageNumber ] = useState(startingPageNumber)
   const [ warningText, setWarningText ] = useState('')
   const [ errorText, setErrorText ] = useState('')
+  const [ size, setSize ] = useState({ width: 612, height: 792 })
 
-  const { width, height } = useWindowSize(1920, 1080)
+  const { width: windowWidth, height: windowHeight } = useWindowSize(1920, 1080)
 
   const handleLoadSuccess = e => {
     setNumPages(e.numPages)
@@ -67,6 +68,12 @@ const BookPage: NextPage<Props> = ({
     }
   }
 
+  const handleSizeChange = (width: number, height: number) => {
+    if (size.width !== width || size.height !== height) {
+      setSize({ width, height })
+    }
+  }
+
   return (
     <>
       <div
@@ -81,13 +88,13 @@ const BookPage: NextPage<Props> = ({
       >
         <div
           style={{
-            width: (width - 612) / 2,
+            width: (windowWidth - size.width) / 2,
             backgroundColor: theme.palette.primary.main
           }}
           onClick={handlePreviousPage}
         />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ height: (height - 792) / 2 }}>
+          <div style={{ height: (windowHeight - size.height) / 2 }}>
             <Link href='/home'>
               <a href='/home'>
                 <Logo size='small' white />
@@ -95,12 +102,12 @@ const BookPage: NextPage<Props> = ({
             </Link>
           </div>
           <div
-            // style={{
-            //   minWidth: 612,
-            //   width: '30%',
-            //   height: 792,
-            //   backgroundColor: '#fff'
-            // }}
+            style={{
+              minWidth: size.width,
+              width: '30%',
+              height: size.height,
+              backgroundColor: '#fff'
+            }}
           >
             {
               base64 && (
@@ -109,6 +116,7 @@ const BookPage: NextPage<Props> = ({
                   base64={base64}
                   pageNumber={pageNumber}
                   onError={e => setErrorText(`Error while loading document: ${e.message}`)}
+                  onSizeChange={handleSizeChange}
                 />
               )
             }
@@ -132,7 +140,7 @@ const BookPage: NextPage<Props> = ({
         </div>
         <div
           style={{
-            width: (width - 612) / 2,
+            width: (windowWidth - size.width) / 2,
             backgroundColor: theme.palette.primary.main
           }}
           onClick={handleNextPage}
