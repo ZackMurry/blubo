@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
+import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,7 +64,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public Optional<BookEntity> getBook(@NonNull UUID ownerId, @NonNull String title) {
-        final String sql = "SELECT id, author FROM books WHERE owner_id = ? AND title = ?";
+        final String sql = "SELECT id, author, page_number FROM books WHERE owner_id = ? AND title = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, ownerId);
@@ -71,11 +72,12 @@ public class BookDataAccessService implements BookDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return Optional.of(
-                        new BookEntity(
+                    new BookEntity(
                             UUID.fromString(resultSet.getString("id")),
                             ownerId,
                             title,
-                            resultSet.getString("author")
+                            resultSet.getString("author"),
+                            resultSet.getInt("page_number")
                     )
                 );
             }
@@ -88,7 +90,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public Optional<BookEntity> getBook(UUID id) {
-        final String sql = "SELECT owner_id, title, author FROM books WHERE id = ?";
+        final String sql = "SELECT owner_id, title, author, page_number FROM books WHERE id = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, id);
@@ -99,7 +101,8 @@ public class BookDataAccessService implements BookDao {
                                 id,
                                 UUID.fromString(resultSet.getString("owner_id")),
                                 resultSet.getString("title"),
-                                resultSet.getString("author")
+                                resultSet.getString("author"),
+                                resultSet.getInt("page_number")
                         )
                 );
             }
@@ -112,7 +115,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public List<BookEntity> getBooksByUser(UUID ownerId) {
-        final String sql = "SELECT id, title, author FROM books WHERE owner_id = ?";
+        final String sql = "SELECT id, title, author, page_number FROM books WHERE owner_id = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, ownerId);
@@ -124,7 +127,8 @@ public class BookDataAccessService implements BookDao {
                                 UUID.fromString(resultSet.getString("id")),
                                 ownerId,
                                 resultSet.getString("title"),
-                                resultSet.getString("author")
+                                resultSet.getString("author"),
+                                resultSet.getInt("page_number")
                         )
                 );
             }
@@ -142,6 +146,20 @@ public class BookDataAccessService implements BookDao {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, id);
             return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public void setBookPage(UUID bookId, int page) {
+        final String sql = "UPDATE books SET page_number = ? WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, page);
+            preparedStatement.setObject(2, bookId);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InternalServerException();

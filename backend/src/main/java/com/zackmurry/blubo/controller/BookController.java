@@ -1,5 +1,7 @@
 package com.zackmurry.blubo.controller;
 
+import com.zackmurry.blubo.dao.book.UpdatePageRequest;
+import com.zackmurry.blubo.exception.BadRequestException;
 import com.zackmurry.blubo.model.book.BookEntity;
 import com.zackmurry.blubo.model.user.UserEntity;
 import com.zackmurry.blubo.service.BookService;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +55,15 @@ public class BookController {
     public BookEntity getBookDetails(@PathVariable String id) {
         final UUID bookId = UUID.fromString(id);
         return bookService.getBookDetails(bookId);
+    }
+
+    @PutMapping("/{id}/page")
+    public void setBookPage(@PathVariable String id, @RequestBody @NonNull UpdatePageRequest request) {
+        if (request.getPage() == null) {
+            throw new BadRequestException();
+        }
+        final UUID bookId = UUID.fromString(id);
+        bookService.setBookPage(bookId, request.getPage());
     }
 
 }

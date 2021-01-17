@@ -122,4 +122,19 @@ public class BookService {
         }
         return bookEntity;
     }
+
+    public void setBookPage(@NonNull UUID id, int page) {
+        final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        final BookEntity bookEntity = bookDao.getBook(id).orElse(null);
+        if (bookEntity == null) {
+            throw new BookNotFoundException();
+        }
+        if (!userId.equals(bookEntity.getOwnerId())) {
+            throw new ForbiddenException();
+        }
+        if (page < 1) {
+            throw new BadRequestException();
+        }
+        bookDao.setBookPage(id, page);
+    }
 }

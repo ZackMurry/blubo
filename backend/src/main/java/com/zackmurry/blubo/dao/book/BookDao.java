@@ -18,4 +18,6 @@ public interface BookDao {
 
     int deleteBook(UUID id);
 
+    void setBookPage(UUID bookId, int page);
+
 }
