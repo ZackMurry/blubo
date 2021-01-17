@@ -64,7 +64,15 @@ const ImportBook: FC<Props> = ({ jwt }) => {
   }
 
   const handleSetDetails = async () => {
-    console.log(bookId)
+    if (title.length > 256) {
+      setErrorText('The title must be a maximum of 256 characters')
+      return
+    }
+    if (author.length > 256) {
+      setErrorText('The author must be a maximum of 256 characters')
+      return
+    }
+
     const response = await fetch(`/api/v1/books/${bookId}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
@@ -98,14 +106,24 @@ const ImportBook: FC<Props> = ({ jwt }) => {
               alignItems: 'flex-end'
             }}
           >
-            <div style={{ width: '100%', padding: 5, backgroundColor: '#fff' }}>
+            <div
+              style={{
+                width: '100%',
+                padding: 5,
+                backgroundColor: '#fff',
+                height: 95,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
               <Typography variant='h5' style={{ padding: 10, paddingBottom: 5, fontSize: 18 }}>
                 Import book
               </Typography>
               <Typography
                 variant='h6'
                 style={{
-                  padding: 10,
+                  padding: '7.5px 10px',
                   paddingTop: 0,
                   fontSize: 10,
                   fontWeight: 300,
@@ -145,12 +163,14 @@ const ImportBook: FC<Props> = ({ jwt }) => {
               label='Title'
               variant='outlined'
               onChange={e => setTitle(e.target.value)}
+              style={{ marginBottom: 10 }}
             />
             <TextField
               value={author}
               label='Author'
               variant='outlined'
               onChange={e => setAuthor(e.target.value)}
+              style={{ marginTop: 10 }}
             />
           </div>
         </DialogContent>
