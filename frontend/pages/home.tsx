@@ -6,13 +6,7 @@ import Logo from '../components/Logo'
 import theme from '../components/utils/theme'
 import redirectToLogin from '../components/utils/redirectToLogin'
 import ErrorAlert from '../components/alert/ErrorAlert'
-
-interface BookEntity {
-  id: string
-  ownerId: string
-  title: string
-  author: string
-}
+import BookEntity from '../components/utils/types/BookEntity'
 
 interface Props {
   books?: BookEntity[]

@@ -1,6 +1,6 @@
 import { parse } from 'cookie'
 import { GetServerSideProps, NextPage } from 'next'
-import { ChangeEvent, FC, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import ErrorAlert from '../components/alert/ErrorAlert'
 import redirectToLogin from '../components/utils/redirectToLogin'
 

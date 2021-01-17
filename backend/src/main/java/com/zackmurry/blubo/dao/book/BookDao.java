@@ -12,6 +12,8 @@ public interface BookDao {
 
     Optional<BookEntity> getBook(UUID ownerId, String title);
 
+    Optional<BookEntity> getBook(UUID id);
+
     List<BookEntity> getBooksByUser(UUID ownerId);
 
     int deleteBook(UUID id);

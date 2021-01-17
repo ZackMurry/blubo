@@ -87,6 +87,30 @@ public class BookDataAccessService implements BookDao {
     }
 
     @Override
+    public Optional<BookEntity> getBook(UUID id) {
+        final String sql = "SELECT owner_id, title, author FROM books WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setObject(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(
+                        new BookEntity(
+                                id,
+                                UUID.fromString(resultSet.getString("owner_id")),
+                                resultSet.getString("title"),
+                                resultSet.getString("author")
+                        )
+                );
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
     public List<BookEntity> getBooksByUser(UUID ownerId) {
         final String sql = "SELECT id, title, author FROM books WHERE owner_id = ?";
         try {

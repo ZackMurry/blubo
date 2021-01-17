@@ -2,6 +2,8 @@ package com.zackmurry.blubo.service;
 
 import com.zackmurry.blubo.dao.book.BookDao;
 import com.zackmurry.blubo.exception.BadRequestException;
+import com.zackmurry.blubo.exception.BookNotFoundException;
+import com.zackmurry.blubo.exception.ForbiddenException;
 import com.zackmurry.blubo.exception.InternalServerException;
 import com.zackmurry.blubo.model.book.BookEntity;
 import com.zackmurry.blubo.model.user.UserEntity;
@@ -89,4 +91,35 @@ public class BookService {
 //        }
     }
 
+    public byte[] getRawBook(@NonNull UUID id) {
+        final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        final BookEntity bookEntity = bookDao.getBook(id).orElse(null);
+        if (bookEntity == null) {
+            throw new BookNotFoundException();
+        }
+        if (!bookEntity.getOwnerId().equals(userId)) {
+            throw new ForbiddenException();
+        }
+        Path bookPath = resolvePathFromBookId(id);
+        byte[] rawContent;
+        try {
+            rawContent = Files.readAllBytes(bookPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BadRequestException();
+        }
+        return rawContent;
+    }
+
+    public BookEntity getBookDetails(@NonNull UUID id) {
+        final BookEntity bookEntity = bookDao.getBook(id).orElse(null);
+        if (bookEntity == null) {
+            throw new BookNotFoundException();
+        }
+        final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        if (!userId.equals(bookEntity.getOwnerId())) {
+            throw new ForbiddenException();
+        }
+        return bookEntity;
+    }
 }
