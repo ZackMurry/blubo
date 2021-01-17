@@ -11,9 +11,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class UserDataAccessService implements UserDao {
@@ -62,6 +60,35 @@ public class UserDataAccessService implements UserDao {
             preparedStatement.setString(3, userEntity.getLastName());
             preparedStatement.setString(4, userEntity.getHash());
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public List<UserEntity> findByIds(List<UUID> ids) {
+        final String questionMarks = String.join(",", Collections.nCopies(ids.size(), "?"));
+        final String sql = String.format("SELECT id, email, first_name, last_name, hash FROM users WHERE id IN (%s)", questionMarks);
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            for (int i = 0; i < ids.size(); i++) {
+                preparedStatement.setObject(i + 1, ids.get(i));
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<UserEntity> users = new ArrayList<>();
+            while (resultSet.next()) {
+                users.add(
+                        new UserEntity(
+                                UUID.fromString(resultSet.getString("id")),
+                                resultSet.getString("email"),
+                                resultSet.getString("first_name"),
+                                resultSet.getString("last_name"),
+                                resultSet.getString("hash")
+                        )
+                );
+            }
+            return users;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InternalServerException();

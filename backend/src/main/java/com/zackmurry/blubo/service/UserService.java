@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -79,6 +81,10 @@ public class UserService implements UserDetailsService {
                 )
         );
         return jwtUtil.createToken(new HashMap<>(), authenticationRequest.getEmail());
+    }
+
+    public List<UserEntity> getUsersByIds(@NonNull List<UUID> ids) {
+        return userDao.findByIds(ids);
     }
 
 }
