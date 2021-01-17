@@ -16,4 +16,6 @@ public interface UserDao {
 
     void updatePagesRead(UUID userId, int pagesRead);
 
+    List<UserEntity> getUsersSortedByPages(int limit);
+
 }

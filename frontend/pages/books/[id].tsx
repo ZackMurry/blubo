@@ -41,7 +41,6 @@ const BookPage: NextPage<Props> = ({
   }
 
   const updatePageNumber = useCallback(throttle(async (newPage: number) => {
-    console.log('throttle')
     const response = await fetch(`/api/v1/books/${id}/page`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
@@ -174,8 +173,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res, 
     }
   }
 
-  const dev = process.env.NODE_ENV !== 'production'
-  // const domain = dev ? 'http://localhost' : 'https://blubo.zackmurry.com'
+  // const domain = process.env.NODE_ENV === 'production' ? 'http://localhost' : 'https://blubo.zackmurry.com'
   const domain = 'http://localhost'
 
   const infoResponse = await fetch(`${domain}/api/v1/books/${id}`, {

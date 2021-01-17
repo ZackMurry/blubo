@@ -8,30 +8,43 @@ import redirectToLogin from '../components/utils/redirectToLogin'
 import ErrorAlert from '../components/alert/ErrorAlert'
 import BookEntity from '../components/utils/types/BookEntity'
 import ImportBook from '../components/book/ImportBook'
+import PageLeaderboard from '../components/follow/PageLeaderboard'
+import PublicUserInfo from '../components/utils/types/PublicUserInfo'
 
 interface Props {
   books?: BookEntity[]
   errorText?: string
   jwt?: string
+  following?: PublicUserInfo[]
+  userLeaderboard?: PublicUserInfo[]
 }
 
-const HomePage: NextPage<Props> = ({ books, errorText, jwt }) => (
-  <div style={{ backgroundColor: theme.palette.primary.main, width: '100%', height: '100vh' }}>
+const HomePage: NextPage<Props> = ({
+  books, errorText, jwt, following, userLeaderboard
+}) => (
+  <div style={{ backgroundColor: theme.palette.primary.main, width: '100%', minHeight: '100vh' }}>
     <Logo size='small' white />
-    <Paper style={{ width: '75%', margin: '0 auto', padding: 25 }}>
-      <Grid container spacing={4}>
-        {
-          books && books.map(book => (
-            <Grid item xs={3} lg={2} key={book.id}>
-              <BookPreview {...book} />
-            </Grid>
-          ))
-        }
-        <Grid item xs={3} lg={2}>
-          <ImportBook jwt={jwt} />
+    <div style={{ width: '75%', margin: '0 auto' }}>
+      <Paper style={{ width: '100%', padding: 25 }}>
+        <Grid container spacing={4}>
+          {
+            books && books.map(book => (
+              <Grid item xs={3} lg={2} key={book.id}>
+                <BookPreview {...book} />
+              </Grid>
+            ))
+          }
+          <Grid item xs={3} lg={2}>
+            <ImportBook jwt={jwt} />
+          </Grid>
+        </Grid>
+      </Paper>
+      <Grid container spacing={3} style={{ width: '100%', marginTop: 50 }}>
+        <Grid xs={7}>
+          <PageLeaderboard following={following} leaderboard={userLeaderboard} />
         </Grid>
       </Grid>
-    </Paper>
+    </div>
     {
       errorText && <ErrorAlert text={errorText} disableClose />
     }
@@ -53,21 +66,54 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
   }
   // const domain = process.env.NODE_ENV !== 'production' ? 'http://localhost' : 'https://blubo.zackmurry.com'
   const domain = 'http://localhost'
-  const response = await fetch(domain + '/api/v1/books?limit=5', {
+  const bookResponse = await fetch(domain + '/api/v1/books?limit=5', {
     headers: { Authorization: `Bearer ${jwt}` }
   })
-  if (response.ok) {
-    const books = await response.json()
+  let books: BookEntity[] | null = null
+  if (bookResponse.ok) {
+    books = await bookResponse.json()
+  } else {
     return {
       props: {
-        books,
-        jwt
+        errorText: 'There was an error fetching your books. Status code: ' + bookResponse.status
       }
     }
   }
+
+  const followingResponse = await fetch(domain + '/api/v1/follows', {
+    headers: { Authorization: `Bearer ${jwt}` }
+  })
+  let following: PublicUserInfo[] | null = null
+  if (followingResponse.ok) {
+    following = await followingResponse.json()
+  } else {
+    return {
+      props: {
+        errorText: 'There was an error fetching the users you\'re following. Status code: ' + followingResponse.status
+      }
+    }
+  }
+
+  const userLeaderboardResponse = await fetch(domain + '/api/v1/users/leaderboard?limit=10', {
+    headers: { Authorization: `Bearer ${jwt}` }
+  })
+  let userLeaderboard: PublicUserInfo[] | null = null
+  if (userLeaderboardResponse.ok) {
+    userLeaderboard = await userLeaderboardResponse.json()
+  } else {
+    return {
+      props: {
+        errorText: 'There was an error getting leaderboard data. Status code: ' + userLeaderboardResponse.status
+      }
+    }
+  }
+
   return {
     props: {
-      errorText: 'There was an error fetching your books. Status code: ' + response.status
+      jwt,
+      following,
+      books,
+      userLeaderboard
     }
   }
 }

@@ -5,6 +5,7 @@ import com.zackmurry.blubo.model.user.UserEntity;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -68,9 +69,13 @@ public class UserDataAccessService implements UserDao {
     }
 
     @Override
-    public List<UserEntity> findByIds(List<UUID> ids) {
+    public List<UserEntity> findByIds(@NonNull List<UUID> ids) {
+        if (ids.size() == 0) {
+            return new ArrayList<>();
+        }
         final String questionMarks = String.join(",", Collections.nCopies(ids.size(), "?"));
         final String sql = String.format("SELECT id, email, first_name, last_name, hash FROM users WHERE id IN (%s)", questionMarks);
+        System.out.println(sql);
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             for (int i = 0; i < ids.size(); i++) {
@@ -105,6 +110,33 @@ public class UserDataAccessService implements UserDao {
             preparedStatement.setInt(1, pagesRead);
             preparedStatement.setObject(2, userId);
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public List<UserEntity> getUsersSortedByPages(int limit) {
+        final String sql = "SELECT id, email, first_name, last_name, hash, pages_read FROM users ORDER BY pages_read DESC LIMIT ?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, limit);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<UserEntity> userEntities = new ArrayList<>();
+            while (resultSet.next()) {
+                userEntities.add(
+                        new UserEntity(
+                                UUID.fromString(resultSet.getString("id")),
+                                resultSet.getString("email"),
+                                resultSet.getString("first_name"),
+                                resultSet.getString("last_name"),
+                                resultSet.getString("hash"),
+                                resultSet.getInt("pages_read")
+                        )
+                );
+            }
+            return userEntities;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InternalServerException();

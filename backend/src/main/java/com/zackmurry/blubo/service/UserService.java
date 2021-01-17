@@ -5,6 +5,7 @@ import com.zackmurry.blubo.exception.BadRequestException;
 import com.zackmurry.blubo.model.auth.AuthenticationRequest;
 import com.zackmurry.blubo.model.auth.AuthenticationResponse;
 import com.zackmurry.blubo.model.user.AccountCreateRequest;
+import com.zackmurry.blubo.model.user.PublicUserInfo;
 import com.zackmurry.blubo.model.user.UserEntity;
 import com.zackmurry.blubo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -89,6 +92,22 @@ public class UserService implements UserDetailsService {
 
     public void updatePagesRead(UUID userId, int pagesRead) {
         userDao.updatePagesRead(userId, pagesRead);
+    }
+
+    public List<PublicUserInfo> getTopUsers(int limit) {
+        if (limit < 1) {
+            throw new BadRequestException();
+        }
+        List<UserEntity> userEntities = userDao.getUsersSortedByPages(limit);
+        return userEntities.stream().map(PublicUserInfo::of).collect(Collectors.toList());
+    }
+
+    public Optional<UUID> getIdByEmail(@NonNull String email) {
+        final UserEntity userEntity = userDao.findByEmail(email).orElse(null);
+        if (userEntity == null) {
+            return Optional.empty();
+        }
+        return Optional.of(userEntity.getId());
     }
 
 }

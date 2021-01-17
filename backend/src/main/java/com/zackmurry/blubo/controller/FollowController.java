@@ -1,7 +1,9 @@
 package com.zackmurry.blubo.controller;
 
 import com.zackmurry.blubo.exception.BadRequestException;
-import com.zackmurry.blubo.model.follow.UserIdHolder;
+import com.zackmurry.blubo.exception.UserNotFoundException;
+import com.zackmurry.blubo.model.follow.UserEmailHolder;
+import com.zackmurry.blubo.model.user.PublicUserInfo;
 import com.zackmurry.blubo.model.user.UserEntity;
 import com.zackmurry.blubo.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +22,16 @@ public class FollowController {
     private FollowService followService;
 
     @PostMapping("")
-    public void followUser(@NonNull @RequestBody UserIdHolder request) {
-        if (request.getId() == null) {
+    public void followUser(@NonNull @RequestBody UserEmailHolder request) throws UserNotFoundException {
+        if (request.getEmail() == null) {
             throw new BadRequestException();
         }
         final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        followService.followUser(userId, request.getId());
+        followService.followUser(userId, request.getEmail());
     }
 
     @GetMapping("")
-    public List<UserEntity> getFollowing() {
+    public List<PublicUserInfo> getFollowing() {
         final UUID id = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         return followService.getFollowingByUser(id);
     }
