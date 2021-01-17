@@ -20,12 +20,13 @@ public class FollowDataAccessService implements FollowDao {
     public FollowDataAccessService(DataSource dataSource) throws SQLException {
         this.jdbcTemplate = new JdbcTemplate(dataSource.getConnection());
     }
+
     @Override
     public void followUser(UUID followerId, UUID followedId) {
         final String sql = "INSERT INTO follows (follower_id, followed_id) VALUES (?, ?)";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
-            preparedStatement.setObject(1, followedId);
+            preparedStatement.setObject(1, followerId);
             preparedStatement.setObject(2, followedId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

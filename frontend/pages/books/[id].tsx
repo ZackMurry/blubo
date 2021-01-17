@@ -95,12 +95,12 @@ const BookPage: NextPage<Props> = ({
             </Link>
           </div>
           <div
-            style={{
-              minWidth: 612,
-              width: '30%',
-              height: 792,
-              backgroundColor: '#fff'
-            }}
+            // style={{
+            //   minWidth: 612,
+            //   width: '30%',
+            //   height: 792,
+            //   backgroundColor: '#fff'
+            // }}
           >
             {
               base64 && (

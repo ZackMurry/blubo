@@ -1,5 +1,5 @@
 import { CircularProgress } from '@material-ui/core'
-import { FC } from 'react'
+import { FC, useRef, useState } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack'
 
 const LoadingSpinner = () => (
@@ -25,17 +25,27 @@ interface Props {
 
 const BookViewer: FC<Props> = ({
   base64, pageNumber, onLoadSuccess, onError
-}) => (
-  <div>
-    <Document
-      file={base64}
-      onLoadSuccess={onLoadSuccess}
-      onLoadError={onError}
-      loading={<LoadingSpinner />}
-    >
-      <Page pageNumber={pageNumber} loading={<div />} />
-    </Document>
-  </div>
-)
+}) => {
+  const [ width, setWidth ] = useState(612)
+  const ref = useRef(null)
+
+  const handleRenderSuccess = () => {
+    setWidth(ref.current.getBoundingClientRect().width)
+    console.log(ref.current.getBoundingClientRect().width)
+  }
+
+  return (
+    <div ref={ref}>
+      <Document
+        file={base64}
+        onLoadSuccess={onLoadSuccess}
+        onLoadError={onError}
+        loading={<LoadingSpinner />}
+      >
+        <Page pageNumber={pageNumber} loading={<div />} onRenderSuccess={handleRenderSuccess} />
+      </Document>
+    </div>
+  )
+}
 
 export default BookViewer

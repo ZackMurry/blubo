@@ -74,8 +74,7 @@ public class UserDataAccessService implements UserDao {
             return new ArrayList<>();
         }
         final String questionMarks = String.join(",", Collections.nCopies(ids.size(), "?"));
-        final String sql = String.format("SELECT id, email, first_name, last_name, hash FROM users WHERE id IN (%s)", questionMarks);
-        System.out.println(sql);
+        final String sql = String.format("SELECT id, email, first_name, last_name, hash, pages_read FROM users WHERE id IN (%s)", questionMarks);
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             for (int i = 0; i < ids.size(); i++) {

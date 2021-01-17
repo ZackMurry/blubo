@@ -10,6 +10,7 @@ import BookEntity from '../components/utils/types/BookEntity'
 import ImportBook from '../components/book/ImportBook'
 import PageLeaderboard from '../components/follow/PageLeaderboard'
 import PublicUserInfo from '../components/utils/types/PublicUserInfo'
+import FollowSection from '../components/follow/FollowSection'
 
 interface Props {
   books?: BookEntity[]
@@ -40,8 +41,11 @@ const HomePage: NextPage<Props> = ({
         </Grid>
       </Paper>
       <Grid container spacing={3} style={{ width: '100%', marginTop: 50 }}>
-        <Grid xs={7}>
+        <Grid item xs={7}>
           <PageLeaderboard following={following} leaderboard={userLeaderboard} />
+        </Grid>
+        <Grid item xs={5}>
+          <FollowSection jwt={jwt} />
         </Grid>
       </Grid>
     </div>

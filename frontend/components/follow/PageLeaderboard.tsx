@@ -33,7 +33,7 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
         </Typography>
         <Grid container spacing={3}>
           {
-            following.length !== 0 && (
+            following?.length !== 0 && (
               <>
                 <Grid item xs={6}>
                   <Typography style={{ fontWeight: 500 }}>
@@ -49,13 +49,13 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
             )
           }
           {
-            following.map(userInfo => (
-              <LeaderboardRow {...userInfo} />
+            Boolean(following?.length) && following.map(userInfo => (
+              <LeaderboardRow key={userInfo.id + 'follow'} {...userInfo} />
             ))
           }
         </Grid>
         {
-          following.length === 0 && (
+          following?.length === 0 && (
             <Typography
               variant='h5'
               style={{
@@ -87,8 +87,8 @@ const PageLeaderboard: FC<Props> = ({ following, leaderboard }) => (
             </Typography>
           </Grid>
           {
-            leaderboard.map(userInfo => (
-              <LeaderboardRow {...userInfo} />
+            leaderboard?.length && leaderboard.map(userInfo => (
+              <LeaderboardRow key={userInfo.id + 'board'} {...userInfo} />
             ))
           }
         </Grid>

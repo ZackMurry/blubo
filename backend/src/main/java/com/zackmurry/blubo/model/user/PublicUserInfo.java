@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PublicUserInfo {
 
-    private UUID uuid;
+    private UUID id;
     private String firstName;
     private String lastName;
     private Integer pagesRead;

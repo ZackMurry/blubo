@@ -24,7 +24,6 @@ public class FollowService {
     public List<PublicUserInfo> getFollowingByUser(@NonNull UUID followerId) {
         List<UUID> followingIds = followDao.getFollowing(followerId);
         List<UserEntity> users = userService.getUsersByIds(followingIds);
-
         // sort by pages read
         // todo this might be backwards idk
         users.sort((a, b) -> b.getPagesRead().compareTo(a.getPagesRead()));
