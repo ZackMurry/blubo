@@ -36,6 +36,9 @@ public class BookService {
     @Autowired
     private BookDao bookDao;
 
+    @Autowired
+    private UserService userService;
+
     @Value("${app.upload.dir:${user.home}/.blubo}")
     private String uploadDirectory;
 
@@ -122,7 +125,8 @@ public class BookService {
     }
 
     public void setBookPage(@NonNull UUID id, int page) {
-        final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        final UserEntity principal = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final UUID userId = principal.getId();
         final BookEntity bookEntity = bookDao.getBook(id).orElse(null);
         if (bookEntity == null) {
             throw new BookNotFoundException();
@@ -133,6 +137,12 @@ public class BookService {
         if (page < 1) {
             throw new BadRequestException();
         }
+
+        // updating pages_read field in users
+        final int numNewPagesRead = page - bookEntity.getPageNumber(); // can be negative for good reasons
+        final int newPagesRead = principal.getPagesRead() + numNewPagesRead;
+        userService.updatePagesRead(userId, newPagesRead);
+
         bookDao.setBookPage(id, page);
     }
 

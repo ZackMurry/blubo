@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(320) UNIQUE NOT NULL,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
-    hash VARCHAR(64) NOT NULL
+    hash VARCHAR(64) NOT NULL,
+    pages_read INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS books (

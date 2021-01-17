@@ -14,4 +14,6 @@ public interface UserDao {
 
     List<UserEntity> findByIds(List<UUID> ids);
 
+    void updatePagesRead(UUID userId, int pagesRead);
+
 }

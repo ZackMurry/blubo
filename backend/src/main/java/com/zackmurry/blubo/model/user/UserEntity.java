@@ -22,6 +22,7 @@ public class UserEntity implements UserDetails {
     private String firstName;
     private String lastName;
     private String hash;
+    private Integer pagesRead;
 
     public UserEntity(String email, String firstName, String lastName, String hash) {
         this.email = email;

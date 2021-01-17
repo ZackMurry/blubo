@@ -87,4 +87,8 @@ public class UserService implements UserDetailsService {
         return userDao.findByIds(ids);
     }
 
+    public void updatePagesRead(UUID userId, int pagesRead) {
+        userDao.updatePagesRead(userId, pagesRead);
+    }
+
 }

@@ -26,7 +26,7 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public Optional<UserEntity> findByEmail(String email) {
-        String sql = "SELECT id, first_name, last_name, hash FROM users WHERE email = ?";
+        String sql = "SELECT id, first_name, last_name, hash, pages_read FROM users WHERE email = ?";
         try {
             List<UserEntity> userEntityList = jdbcTemplate.query(
                     sql,
@@ -35,7 +35,8 @@ public class UserDataAccessService implements UserDao {
                             email,
                             resultSet.getString("first_name"),
                             resultSet.getString("last_name"),
-                            resultSet.getString("hash")
+                            resultSet.getString("hash"),
+                            resultSet.getInt("pages_read")
                     ),
                     email
             );
@@ -84,11 +85,26 @@ public class UserDataAccessService implements UserDao {
                                 resultSet.getString("email"),
                                 resultSet.getString("first_name"),
                                 resultSet.getString("last_name"),
-                                resultSet.getString("hash")
+                                resultSet.getString("hash"),
+                                resultSet.getInt("pages_read")
                         )
                 );
             }
             return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public void updatePagesRead(UUID userId, int pagesRead) {
+        final String sql = "UPDATE users SET pages_read = ? WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, pagesRead);
+            preparedStatement.setObject(2, userId);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InternalServerException();
