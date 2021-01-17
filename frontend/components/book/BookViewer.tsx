@@ -20,14 +20,17 @@ interface Props {
   base64: string
   pageNumber: number
   onLoadSuccess: Function
+  onError: Function
 }
 
-const BookViewer: FC<Props> = ({ base64, pageNumber, onLoadSuccess }) => (
+const BookViewer: FC<Props> = ({
+  base64, pageNumber, onLoadSuccess, onError
+}) => (
   <div>
     <Document
       file={base64}
       onLoadSuccess={onLoadSuccess}
-      onLoadError={console.err}
+      onLoadError={onError}
       loading={<LoadingSpinner />}
     >
       <Page pageNumber={pageNumber} loading={<div />} />

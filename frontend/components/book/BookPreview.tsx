@@ -5,13 +5,12 @@ import theme from '../utils/theme'
 
 interface Props {
   id: string
-  ownerId: string
   title: string
   author: string
 }
 
 const BookPreview: FC<Props> = ({
-  id, ownerId, title, author
+  id, title, author
 }) => (
   <Link href={`/books/${id}`}>
     <a href={`/books/${id}`}>
@@ -19,27 +18,32 @@ const BookPreview: FC<Props> = ({
         <CardActionArea>
           <div
             style={{
-              height: 125,
+              height: 200,
               width: '100%',
               backgroundColor: theme.palette.secondary.main,
-              borderRadius: '10px 10px 0 0'
-            }}
-          />
-          <Typography variant='h5' style={{ padding: 10, paddingBottom: 5, fontSize: 18 }}>
-            {title}
-          </Typography>
-          <Typography
-            variant='h6'
-            style={{
-              padding: 10,
-              paddingTop: 0,
-              fontSize: 10,
-              fontWeight: 300,
-              textTransform: 'uppercase'
+              borderRadius: 10,
+              display: 'flex',
+              alignItems: 'flex-end'
             }}
           >
-            {author}
-          </Typography>
+            <div style={{ paddingTop: 5, backgroundColor: '#fff' }}>
+              <Typography variant='h5' style={{ padding: 10, paddingBottom: 5, fontSize: 18 }}>
+                {title}
+              </Typography>
+              <Typography
+                variant='h6'
+                style={{
+                  padding: 10,
+                  paddingTop: 0,
+                  fontSize: 10,
+                  fontWeight: 300,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {author}
+              </Typography>
+            </div>
+          </div>
         </CardActionArea>
       </Card>
     </a>

@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -53,7 +54,7 @@ public class BookService {
         return Paths.get(uploadDirectory + File.separator + StringUtils.cleanPath(id.toString()) + ".pdf");
     }
 
-    public void createBook(@NonNull MultipartFile file) {
+    public UUID createBook(@NonNull MultipartFile file) {
         if (file.getOriginalFilename() == null) {
             throw new BadRequestException();
         }
@@ -69,26 +70,23 @@ public class BookService {
                 throw new InternalServerException();
             }
             Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
+            return bookId;
         } catch (IOException e) {
             e.printStackTrace();
             throw new InternalServerException();
         }
     }
 
+    public List<BookEntity> getBooksByUser(@NonNull UUID userId, int limit) {
+        List<BookEntity> bookEntities = bookDao.getBooksByUser(userId);
+        if (limit < 0) {
+            return bookEntities;
+        }
+        return bookEntities.stream().limit(limit).collect(Collectors.toList());
+    }
+
     public List<BookEntity> getBooksByUser(@NonNull UUID userId) {
-        return bookDao.getBooksByUser(userId);
-//        for (BookEntity bookEntity : bookEntities) {
-//            Path bookLocation = resolvePathFromBookId(bookEntity.getId());
-//            if (!bookLocation.toFile().exists()) {
-//                logger.warn("Book in database but no file found! Id: {}", bookEntity.getId().toString());
-//                // delete book from database so that this doesn't happen again
-//                if (bookDao.deleteBook(bookEntity.getId()) != 1) {
-//                    logger.warn("Book found in database, file not found, then not found in database when deleting. Bruh. Id: {}", bookEntity.getId());
-//                    throw new InternalServerException();
-//                }
-//            }
-//
-//        }
+        return getBooksByUser(userId, -1);
     }
 
     public byte[] getRawBook(@NonNull UUID id) {
@@ -136,5 +134,17 @@ public class BookService {
             throw new BadRequestException();
         }
         bookDao.setBookPage(id, page);
+    }
+
+    public void updateBook(@NonNull UUID id, @NonNull String title, @NonNull String author) {
+        final UUID userId = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        final BookEntity bookEntity = bookDao.getBook(id).orElse(null);
+        if (bookEntity == null) {
+            throw new BookNotFoundException();
+        }
+        if (!userId.equals(bookEntity.getOwnerId())) {
+            throw new ForbiddenException();
+        }
+        bookDao.updateBook(id, title, author);
     }
 }

@@ -7,13 +7,15 @@ import theme from '../components/utils/theme'
 import redirectToLogin from '../components/utils/redirectToLogin'
 import ErrorAlert from '../components/alert/ErrorAlert'
 import BookEntity from '../components/utils/types/BookEntity'
+import ImportBook from '../components/book/ImportBook'
 
 interface Props {
   books?: BookEntity[]
   errorText?: string
+  jwt?: string
 }
 
-const HomePage: NextPage<Props> = ({ books, errorText }) => (
+const HomePage: NextPage<Props> = ({ books, errorText, jwt }) => (
   <div style={{ backgroundColor: theme.palette.primary.main, width: '100%', height: '100vh' }}>
     <Logo size='small' white />
     <Paper style={{ width: '75%', margin: '0 auto', padding: 25 }}>
@@ -25,6 +27,9 @@ const HomePage: NextPage<Props> = ({ books, errorText }) => (
             </Grid>
           ))
         }
+        <Grid item xs={3} lg={2}>
+          <ImportBook jwt={jwt} />
+        </Grid>
       </Grid>
     </Paper>
     {
@@ -46,21 +51,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
       props: {}
     }
   }
-  const dev = process.env.NODE_ENV !== 'production'
-  const response = await fetch((dev ? 'http://localhost' : 'https://blubo.zackmurry.com') + '/api/v1/books', {
+  // const domain = process.env.NODE_ENV !== 'production' ? 'http://localhost' : 'https://blubo.zackmurry.com'
+  const domain = 'http://localhost'
+  const response = await fetch(domain + '/api/v1/books?limit=5', {
     headers: { Authorization: `Bearer ${jwt}` }
   })
   if (response.ok) {
     const books = await response.json()
     return {
       props: {
-        books
+        books,
+        jwt
       }
     }
   }
   return {
     props: {
-      errorText: 'There was an error fetching your books'
+      errorText: 'There was an error fetching your books. Status code: ' + response.status
     }
   }
 }

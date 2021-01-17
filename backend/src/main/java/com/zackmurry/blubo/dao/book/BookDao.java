@@ -20,4 +20,6 @@ public interface BookDao {
 
     void setBookPage(UUID bookId, int page);
 
+    void updateBook(UUID id, String title, String author);
+
 }

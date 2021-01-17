@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS books (
     owner_id UUID NOT NULL REFERENCES users ON DELETE CASCADE,
     title VARCHAR(256) NOT NULL, -- title should be unique to the owner
     author VARCHAR(256) NOT NULL DEFAULT '',
-    page_number INTEGER NOT NULL DEFAULT 1
+    page_number INTEGER NOT NULL DEFAULT 1,
+    last_opened TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,4 +1,4 @@
-package com.zackmurry.blubo.dao.book;
+package com.zackmurry.blubo.model.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdatePageRequest {
+public class UpdateBookRequest {
 
-    private Integer page;
+    private String title;
+    private String author;
 
 }

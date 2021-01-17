@@ -17,7 +17,7 @@ const BookViewer = dynamic(() => import('../../components/book/BookViewer'))
 
 interface Props {
   jwt?: string
-  errorText?: string
+  loadingErrorText?: string
   id?: string
   ownerId?: string
   title?: string
@@ -27,11 +27,12 @@ interface Props {
 }
 
 const BookPage: NextPage<Props> = ({
-  jwt, id, base64, pageNumber: startingPageNumber, errorText
+  jwt, id, base64, pageNumber: startingPageNumber, loadingErrorText
 }) => {
   const [ numPages, setNumPages ] = useState<number | null>(null)
   const [ pageNumber, setPageNumber ] = useState(startingPageNumber)
   const [ warningText, setWarningText ] = useState('')
+  const [ errorText, setErrorText ] = useState('')
 
   const { width, height } = useWindowSize(1920, 1080)
 
@@ -108,6 +109,7 @@ const BookPage: NextPage<Props> = ({
                   onLoadSuccess={handleLoadSuccess}
                   base64={base64}
                   pageNumber={pageNumber}
+                  onError={e => setErrorText(`Error while loading document: ${e.message}`)}
                 />
               )
             }
@@ -138,10 +140,13 @@ const BookPage: NextPage<Props> = ({
         />
       </div>
       {
-        errorText && <ErrorAlert text={errorText} disableClose />
+        loadingErrorText && <ErrorAlert text={loadingErrorText} disableClose />
       }
       {
         warningText && <WarningAlert text={warningText} onClose={() => setWarningText('')} />
+      }
+      {
+        errorText && <ErrorAlert text={errorText} disableClose />
       }
     </>
   )
@@ -150,16 +155,6 @@ const BookPage: NextPage<Props> = ({
 export default BookPage
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res, query }) => {
-  let jwt: string | null = null
-  if (req.headers?.cookie) {
-    jwt = parse(req.headers.cookie)?.jwt
-  }
-  if (!jwt) {
-    redirectToLogin(res, '/upload')
-    return {
-      props: {}
-    }
-  }
   const { id } = query
   if (!id) {
     res.statusCode = 404
@@ -168,8 +163,20 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res, 
     }
   }
 
+  let jwt: string | null = null
+  if (req.headers?.cookie) {
+    jwt = parse(req.headers.cookie)?.jwt
+  }
+  if (!jwt) {
+    redirectToLogin(res, `/books/${id}`)
+    return {
+      props: {}
+    }
+  }
+
   const dev = process.env.NODE_ENV !== 'production'
-  const domain = dev ? 'http://localhost' : 'https://blubo.zackmurry.com'
+  // const domain = dev ? 'http://localhost' : 'https://blubo.zackmurry.com'
+  const domain = 'http://localhost'
 
   const infoResponse = await fetch(`${domain}/api/v1/books/${id}`, {
     headers: { Authorization: `Bearer ${jwt}` }
@@ -178,48 +185,48 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res, 
   if (infoResponse.ok) {
     bookDetails = (await infoResponse.json()) as BookEntity
   } else {
-    let errorText: string | null
+    let loadingErrorText: string | null
     if (infoResponse.status === 403 || infoResponse.status === 401) {
-      errorText = 'You must be logged in in order to see a book'
+      loadingErrorText = 'You must be logged in in order to see a book'
     } else if (infoResponse.status === 400) {
-      errorText = 'This is not a valid book id'
+      loadingErrorText = 'This is not a valid book id'
     } else if (infoResponse.status === 500) {
-      errorText = 'A server error occured during your request. Please try again'
+      loadingErrorText = 'A server error occured during your request. Please try again'
     } else if (infoResponse.status === 404) {
-      errorText = 'No book found with this ID'
+      loadingErrorText = 'No book found with this ID'
     } else {
-      errorText = `Unknown error. Response status: ${infoResponse.status}`
+      loadingErrorText = `Unknown error. Response status: ${infoResponse.status}`
     }
 
     return {
       props: {
-        errorText
+        loadingErrorText
       }
     }
   }
 
   let content: string | null = null
-  const contentResponse = await fetch((dev ? 'http://localhost' : 'https://blubo.zackmurry.com') + `/api/v1/books/${id}/raw`, {
+  const contentResponse = await fetch(domain + `/api/v1/books/${id}/raw`, {
     headers: { Authorization: `Bearer ${jwt}` }
   })
   if (contentResponse.ok) {
     content = await contentResponse.text()
   } else {
-    let errorText: string | null = null
+    let loadingErrorText: string | null = null
     if (contentResponse.status === 401 || contentResponse.status === 403) {
-      errorText = 'You don\'t have access to this book'
+      loadingErrorText = 'You don\'t have access to this book'
     } else if (contentResponse.status === 400) {
-      errorText = 'This is an invalid book id'
+      loadingErrorText = 'This is an invalid book id'
     } else if (contentResponse.status === 404) {
-      errorText = 'There was no book with this ID found'
+      loadingErrorText = 'There was no book with this ID found'
     } else if (contentResponse.status === 500) {
-      errorText = 'A server error occured during your request. Please try again'
+      loadingErrorText = 'A server error occured during your request. Please try again'
     } else {
-      errorText = 'There was an unknown error. Status code: ' + contentResponse.status
+      loadingErrorText = 'There was an unknown error. Status code: ' + contentResponse.status
     }
     return {
       props: {
-        errorText
+        errorText: loadingErrorText
       }
     }
   }

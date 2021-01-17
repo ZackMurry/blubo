@@ -64,7 +64,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public Optional<BookEntity> getBook(@NonNull UUID ownerId, @NonNull String title) {
-        final String sql = "SELECT id, author, page_number FROM books WHERE owner_id = ? AND title = ?";
+        final String sql = "SELECT id, author, page_number, last_opened FROM books WHERE owner_id = ? AND title = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, ownerId);
@@ -77,7 +77,8 @@ public class BookDataAccessService implements BookDao {
                             ownerId,
                             title,
                             resultSet.getString("author"),
-                            resultSet.getInt("page_number")
+                            resultSet.getInt("page_number"),
+                            resultSet.getTimestamp("last_opened")
                     )
                 );
             }
@@ -90,7 +91,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public Optional<BookEntity> getBook(UUID id) {
-        final String sql = "SELECT owner_id, title, author, page_number FROM books WHERE id = ?";
+        final String sql = "SELECT owner_id, title, author, page_number, last_opened FROM books WHERE id = ?";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, id);
@@ -102,7 +103,8 @@ public class BookDataAccessService implements BookDao {
                                 UUID.fromString(resultSet.getString("owner_id")),
                                 resultSet.getString("title"),
                                 resultSet.getString("author"),
-                                resultSet.getInt("page_number")
+                                resultSet.getInt("page_number"),
+                                resultSet.getTimestamp("last_opened")
                         )
                 );
             }
@@ -115,7 +117,7 @@ public class BookDataAccessService implements BookDao {
 
     @Override
     public List<BookEntity> getBooksByUser(UUID ownerId) {
-        final String sql = "SELECT id, title, author, page_number FROM books WHERE owner_id = ?";
+        final String sql = "SELECT id, title, author, page_number, last_opened FROM books WHERE owner_id = ? ORDER BY last_opened DESC";
         try {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setObject(1, ownerId);
@@ -128,7 +130,8 @@ public class BookDataAccessService implements BookDao {
                                 ownerId,
                                 resultSet.getString("title"),
                                 resultSet.getString("author"),
-                                resultSet.getInt("page_number")
+                                resultSet.getInt("page_number"),
+                                resultSet.getTimestamp("last_opened")
                         )
                 );
             }
@@ -159,6 +162,21 @@ public class BookDataAccessService implements BookDao {
             PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
             preparedStatement.setInt(1, page);
             preparedStatement.setObject(2, bookId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new InternalServerException();
+        }
+    }
+
+    @Override
+    public void updateBook(UUID id, String title, String author) {
+        final String sql = "UPDATE books SET title = ?, author = ? WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = jdbcTemplate.getConnection().prepareStatement(sql);
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2, author);
+            preparedStatement.setObject(3, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
