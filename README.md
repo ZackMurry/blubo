@@ -1,3 +1,4 @@
+![Blubo logo](./logo-blubo.svg)
 # Blubo
 Blubo is an ebook reader with a leaderboard, allowing competition between users. It was made for ThetaHacks, a hackathon that occured in January 2021, meaning that it was built in a weekend.
 
