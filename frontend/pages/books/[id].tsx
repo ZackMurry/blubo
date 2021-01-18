@@ -182,8 +182,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res, 
     }
   }
 
-  // const domain = process.env.NODE_ENV === 'production' ? 'http://localhost' : 'https://blubo.zackmurry.com'
-  const domain = 'http://localhost'
+  const domain = process.env.NODE_ENV === 'production' ? 'http://localhost' : 'https://blubo.zackmurry.com'
 
   const infoResponse = await fetch(`${domain}/api/v1/books/${id}`, {
     headers: { Authorization: `Bearer ${jwt}` }
