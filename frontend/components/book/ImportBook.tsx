@@ -4,7 +4,9 @@ import {
   Card, CardActionArea, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography
 } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import { ChangeEvent, FC, FormEvent, useState } from 'react'
+import {
+  ChangeEvent, FC, FormEvent, useState
+} from 'react'
 import ErrorAlert from '../alert/ErrorAlert'
 import theme from '../utils/theme'
 
